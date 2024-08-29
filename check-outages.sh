@@ -8,28 +8,25 @@
 # detected, it reports the affected service and address.
 
 # Define your address in different formats
-addresses=("Մ.Սարյան" "Մ. Սարյան" "Մարտիրոս Սարյան" "Մ. ՍԱՐՅԱՆ" "ՄԱՐՏԻՐՈՍ ՍԱՐՅԱՆ")
+declare -ar addresses=("Մ.Սարյան" "Մ. Սարյան" "Մարտիրոս Սարյան" "Մ. ՍԱՐՅԱՆ" "ՄԱՐՏԻՐՈՍ ՍԱՐՅԱՆ")
 
 # Define the URLs
-power_url="https://www.ena.am/Info.aspx?id=5&lang=1"
-water_url="https://interactive.vjur.am/"
-gas_url="https://armenia-am.gazprom.com/notice/announcement/plan/"
+declare -r power_url="https://www.ena.am/Info.aspx?id=5&lang=1"
+declare -r water_url="https://interactive.vjur.am/"
+declare -r gas_url="https://armenia-am.gazprom.com/notice/announcement/plan/"
 
 # Function to check for outages
 check_outages() {
   local url=$1
   local service=$2
-  local status=0
+  local -i status=0
 
   # Fetch the webpage content
-  content=$(curl -s $url)
+  local -r content=$(curl -s $url)
 
   # Check for the address in the content
   for address in "${addresses[@]}"; do
-    if echo "$content" | grep -q "$address"; then
-      echo "Outage detected for $service at address: $address"
-      status=1
-    fi
+    grep -q "$address" <<<$content && { echo "Outage detected for $service at address: $address"; status=1; }
   done
 
   # if [ $status -eq 0 ]; then
